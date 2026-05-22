@@ -1,0 +1,96 @@
+{
+  // NOTE: this is a handled as a jsonc file by github/vscode web so comments seem to be ok
+
+  // ommitting the image field seems to default to the universal dev container and leaves ~21gb free space
+  //  "image": "mcr.microsoft.com/devcontainers/universal:2",  // no space left on devices as of 2026/02,
+  //use dev tag see: https://github.com/orgs/community/discussions/63776
+  //"image": "mcr.microsoft.com/devcontainers/universal:dev",  // no space left on devices as of 2025/04
+
+  //"image": "gcr.io/kaggle-images/python:latest",
+  //"image": "mcr.microsoft.com/devcontainers/python:0-3.10", //NOTE: does not include sshd
+  //"image": "mcr.microsoft.com/devcontainers/go:0-1-bullseye",
+  "features": {
+    // uncomment for sshd in python
+    //"ghcr.io/devcontainers/features/sshd:1": {"version": "latest"}       
+    //"ghcr.io/devcontainers/features/terraform:1": {"version": "latest"}       
+    // "ghcr.io/devcontainers/features/docker-in-docker:2": {}, //DiD appears to be in universal
+    "ghcr.io/audacioustux/devcontainers/tilt:1": {},
+
+    // "ghcr.io/devcontainers/features/desktop-lite:1": {},
+    "ghcr.io/eliises/devcontainer-features/devcontainers-cli:1": {"version": "latest"}
+  },
+  "customizations": {
+    "codespaces": {
+      "repositories": {
+        "pault-tech/*": {
+          "permissions": "write-all"
+        }
+      }
+    },
+    "vscode": {
+      "settings": {
+        //spacemacs in terminal tweaks 
+        //NOTE: use ctrl+p toggle keyboard shortcuts troubleshooting
+        "terminal.integrated.commandsToSkipShell": [
+          "-workbench.action.terminal.goToRecentDirectory", //send ctrl+g to terminal and spacemacs (not go to recent directory)
+          "-workbench.action.terminal.focusFind", //ctrl+f
+          "-workbench.action.terminal.clear", //ctrl+k
+          "-workbench.action.togglePanel", //ctrl+j
+          // Ensure the toggle sidebar visibility keybinding skips the shell
+          "-workbench.action.toggleSidebarVisibility", //ctrl+b
+          // Send quick open's keybinding to the shell
+          "-workbench.action.quickOpen" //ctrl+p
+        ],
+        "workbench.panel.opensMaximized": "always",
+        "terminal.integrated.allowChords": false
+      },
+      "extensions": [
+
+        // TODO: code --install-extension
+        "kahole.magit",
+        "vscodevim.vim",
+        "ivoh.sendtoterminalplus",
+        //
+        // uncomment for vspacecode
+        // NOTE: also need to enable vim extension above if also want vim keybindings 2025 jan 
+        "VSpaceCode.vspacecode"
+        //
+        // "ms-python.python",
+        // "ms-python.vscode-pylance",
+        //
+        // "ms-toolsai.jupyter",
+        // "ms-toolsai.jupyter-keymap",
+        // "ms-toolsai.jupyter-renderers",
+        // "ms-toolsai.vscode-jupyter-cell-tags",
+        // "ms-toolsai.vscode-jupyter-slideshow",
+	//
+        //"ms-dotnettools.vscode-dotnet-runtime",
+        //
+        // "ms-toolsai.datawrangler",
+        //
+      ]
+    }
+  },
+
+  //desktop-lite
+  "forwardPorts": [6080],
+  "portsAttributes": {
+    "6080": {
+      "label": "desktop"
+    }
+  },
+
+  "mounts": [
+      "source=/workspaces,target=/workspaces,type=bind,consistency=cached",
+      "source=${localEnv:HOME}/src/,target=/home/vscode/src,type=bind,consistency=cached"
+  ],
+
+  "containerEnv": {
+      "SHELL": "/bin/bash"
+  },
+
+  // jupytext converts notebooks to py automatically on-open in spacemacs
+  "postCreateCommand": "pip install --user kaggle && pip install --user jupytext; sudo chgrp vscode /var/run/docker.sock" //workaround permission denied error
+
+}
+
